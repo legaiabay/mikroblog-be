@@ -9,7 +9,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func FirebaseSetup() (*firebase.App, context.Context) {
+func InitFirebase() (*firebase.App, context.Context) {
 	ctx := context.Background()
 	sa := option.WithCredentialsFile(os.Getenv("CREDENTIAL_FILE"))
 

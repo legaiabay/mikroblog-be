@@ -7,12 +7,11 @@ import (
 
 func main() {
 	//Set logger
-	config.InitLogger()
-	helpers.Logger = config.Log
+	helpers.Logger = config.InitLogger()
 
 	//Set firebase
 	app := helpers.NewFirebaseApp()
-	app.App, app.Context = config.FirebaseSetup()
+	app.App, app.Context = config.InitFirebase()
 
 	//Add new document
 	data := map[string]interface{}{
@@ -40,5 +39,4 @@ func main() {
 	for _, docId := range helpers.ArrayKeys(app.ReadAll("cities")) {
 		app.Delete("cities", docId)
 	}
-
 }

@@ -7,10 +7,8 @@ import (
 	"github.com/snowzach/rotatefilehook"
 )
 
-var Log *logrus.Logger
-
-func InitLogger() {
-	Log = logrus.New()
+func InitLogger() *logrus.Logger {
+	Log := logrus.New()
 
 	rotateFileHook, err := rotatefilehook.NewRotateFileHook(rotatefilehook.RotateFileConfig{
 		Filename:   os.Getenv("LOG_LOCATION"),
@@ -37,4 +35,6 @@ func InitLogger() {
 	if os.Getenv("SERVER_ENV") == "PRODUCTION" {
 		Log.AddHook(rotateFileHook)
 	}
+
+	return Log
 }
