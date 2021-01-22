@@ -10,7 +10,6 @@ import (
 )
 
 type firebaseAppInterface interface {
-	NewFirebaseApp()
 	Add(collection string, doc string, data map[string]interface{}) error
 	Read(collection string, doc string)
 	ReadAll(collection string) (map[int]map[string]interface{}, error)
@@ -26,7 +25,6 @@ type firebaseApp struct {
 
 func NewFirebaseApp() firebaseApp {
 	app := firebaseApp{}
-
 	return app
 }
 
@@ -35,14 +33,12 @@ func (this firebaseApp) Add(collection string, doc string, data map[string]inter
 	defer client.Close()
 	if clientErr != nil {
 		log.Fatalln(clientErr)
-		return
 	}
 
 	_, err := client.Collection(collection).Doc(doc).Set(this.Context, data)
 
 	if err != nil {
 		Logger.Fatalf("Failed adding alovelace: %v", err)
-		return
 	}
 
 	Logger.Printf("inserted : %s", ToJSON(data))
@@ -53,12 +49,11 @@ func (this firebaseApp) Read(collection string, doc string) map[string]map[strin
 	defer client.Close()
 	if clientErr != nil {
 		log.Fatalln(clientErr)
-		return nil
 	}
 
 	dsnap, err := client.Collection(collection).Doc(doc).Get(this.Context)
 	if err != nil {
-		return nil
+		log.Fatalln(err)
 	}
 
 	var temp map[string]interface{}
@@ -76,7 +71,6 @@ func (this firebaseApp) ReadAll(collection string) map[string]map[string]interfa
 	defer client.Close()
 	if clientErr != nil {
 		log.Fatalln(clientErr)
-		return nil
 	}
 
 	docs := make(map[string]map[string]interface{})
@@ -88,7 +82,6 @@ func (this firebaseApp) ReadAll(collection string) map[string]map[string]interfa
 		}
 		if err != nil {
 			Logger.Fatalf("Failed to iterate: %v", err)
-			return nil
 		}
 
 		docs[doc.Ref.ID] = doc.Data()
@@ -103,7 +96,6 @@ func (this firebaseApp) ReadWhere(collection string, field string, op string, va
 	defer client.Close()
 	if clientErr != nil {
 		Logger.Fatalln(clientErr)
-		return nil
 	}
 
 	docs := make(map[string]map[string]interface{})
@@ -114,7 +106,7 @@ func (this firebaseApp) ReadWhere(collection string, field string, op string, va
 			break
 		}
 		if err != nil {
-			return nil
+			log.Fatalln(err)
 		}
 
 		docs[doc.Ref.ID] = doc.Data()
@@ -129,7 +121,6 @@ func (this firebaseApp) Delete(collection string, doc string) {
 	defer client.Close()
 	if clientErr != nil {
 		Logger.Fatalln(clientErr)
-		return
 	}
 
 	_, err := client.Collection(collection).Doc(doc).Delete(this.Context)
@@ -147,7 +138,6 @@ func (this firebaseApp) DeleteColumn(collection string, doc string, column strin
 	defer client.Close()
 	if clientErr != nil {
 		Logger.Fatalln(clientErr)
-		return
 	}
 
 	_, err := client.Collection(collection).Doc(doc).Update(this.Context, []firestore.Update{

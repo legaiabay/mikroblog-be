@@ -8,14 +8,13 @@ import (
 )
 
 //SetupRouter -> Setup route with Go Standard Library
-func SetupRouter() {
+func InitRouter() {
 
 	r := http.NewServeMux()
 
 	//Redirect HTTP request
 	go http.ListenAndServe(":80", http.HandlerFunc(redirect))
 
-	// r.HandleFunc("", )
 	// r.HandleFunc("", )
 
 	helpers.Logger.Info("Server " + os.Getenv("SERVER_ENV") + " started at " + os.Getenv("SERVER_PORT"))
