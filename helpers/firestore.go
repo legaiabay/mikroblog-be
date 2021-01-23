@@ -28,23 +28,24 @@ func NewFirebaseApp() firebaseApp {
 	return app
 }
 
-func (this firebaseApp) Add(collection string, doc string, data map[string]interface{}) {
+func (this firebaseApp) Add(collection string, doc string, data map[string]interface{}) error {
 	client, clientErr := this.App.Firestore(this.Context)
 	defer client.Close()
 	if clientErr != nil {
-		log.Fatalln(clientErr)
+		return clientErr
 	}
 
 	_, err := client.Collection(collection).Doc(doc).Set(this.Context, data)
-
 	if err != nil {
-		Logger.Fatalf("Failed adding alovelace: %v", err)
+		return err
 	}
 
 	Logger.Printf("inserted : %s", ToJSON(data))
+
+	return nil
 }
 
-func (this firebaseApp) Read(collection string, doc string) map[string]map[string]interface{} {
+func (this firebaseApp) Read(collection string, doc string) (map[string]map[string]interface{}, error) {
 	client, clientErr := this.App.Firestore(this.Context)
 	defer client.Close()
 	if clientErr != nil {
@@ -53,7 +54,7 @@ func (this firebaseApp) Read(collection string, doc string) map[string]map[strin
 
 	dsnap, err := client.Collection(collection).Doc(doc).Get(this.Context)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
 	var temp map[string]interface{}
@@ -63,14 +64,15 @@ func (this firebaseApp) Read(collection string, doc string) map[string]map[strin
 	data[dsnap.Ref.ID] = temp
 
 	Logger.Printf("read : %s", ToJSON(data))
-	return data
+
+	return data, nil
 }
 
-func (this firebaseApp) ReadAll(collection string) map[string]map[string]interface{} {
+func (this firebaseApp) ReadAll(collection string) (map[string]map[string]interface{}, error) {
 	client, clientErr := this.App.Firestore(this.Context)
 	defer client.Close()
 	if clientErr != nil {
-		log.Fatalln(clientErr)
+		return nil, clientErr
 	}
 
 	docs := make(map[string]map[string]interface{})
@@ -81,21 +83,22 @@ func (this firebaseApp) ReadAll(collection string) map[string]map[string]interfa
 			break
 		}
 		if err != nil {
-			Logger.Fatalf("Failed to iterate: %v", err)
+			return nil, err
 		}
 
 		docs[doc.Ref.ID] = doc.Data()
 	}
 
 	Logger.Printf("read all : %s", ToJSON(docs))
-	return docs
+
+	return docs, nil
 }
 
-func (this firebaseApp) ReadWhere(collection string, field string, op string, value interface{}) map[string]map[string]interface{} {
+func (this firebaseApp) ReadWhere(collection string, field string, op string, value interface{}) (map[string]map[string]interface{}, error) {
 	client, clientErr := this.App.Firestore(this.Context)
 	defer client.Close()
 	if clientErr != nil {
-		Logger.Fatalln(clientErr)
+		return nil, clientErr
 	}
 
 	docs := make(map[string]map[string]interface{})
@@ -106,38 +109,38 @@ func (this firebaseApp) ReadWhere(collection string, field string, op string, va
 			break
 		}
 		if err != nil {
-			log.Fatalln(err)
+			return nil, err
 		}
 
 		docs[doc.Ref.ID] = doc.Data()
 	}
 
 	Logger.Printf("read where : %s", ToJSON(docs))
-	return docs
+	return docs, nil
 }
 
-func (this firebaseApp) Delete(collection string, doc string) {
+func (this firebaseApp) Delete(collection string, doc string) error {
 	client, clientErr := this.App.Firestore(this.Context)
 	defer client.Close()
 	if clientErr != nil {
-		Logger.Fatalln(clientErr)
+		return clientErr
 	}
 
 	_, err := client.Collection(collection).Doc(doc).Delete(this.Context)
 	if err != nil {
-		// Handle any errors in an appropriate way, such as returning them.
-		Logger.Errorf("An error has occurred: %s", err)
-		return
+		return err
 	}
 
 	Logger.Printf("deleted : %s -> %s", collection, doc)
+
+	return nil
 }
 
-func (this firebaseApp) DeleteColumn(collection string, doc string, column string) {
+func (this firebaseApp) DeleteColumn(collection string, doc string, column string) error {
 	client, clientErr := this.App.Firestore(this.Context)
 	defer client.Close()
 	if clientErr != nil {
-		Logger.Fatalln(clientErr)
+		return clientErr
 	}
 
 	_, err := client.Collection(collection).Doc(doc).Update(this.Context, []firestore.Update{
@@ -146,12 +149,11 @@ func (this firebaseApp) DeleteColumn(collection string, doc string, column strin
 			Value: firestore.Delete,
 		},
 	})
-
 	if err != nil {
-		// Handle any errors in an appropriate way, such as returning them.
-		Logger.Errorf("An error has occurred: %s", err)
-		return
+		return err
 	}
 
 	Logger.Printf("deleted column : %s -> %s -> %s", collection, doc, column)
+
+	return nil
 }

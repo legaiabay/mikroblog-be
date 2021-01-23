@@ -5,7 +5,7 @@ import (
 	"os"
 
 	firebase "firebase.google.com/go"
-	"github.com/mikroblog/helpers"
+	"github.com/mikroblog-be/helpers"
 	"google.golang.org/api/option"
 )
 

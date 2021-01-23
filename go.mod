@@ -1,4 +1,4 @@
-module github.com/mikroblog
+module github.com/mikroblog-be
 
 go 1.15
 
