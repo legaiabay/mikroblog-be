@@ -1,0 +1,16 @@
+version: '3.4'
+services:
+  dev:
+    network_mode: host
+    image: mikroblog-be
+    ports: 
+      - 4423:4423
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: /app
+    volumes:
+      - .:/var/legaiabay/mikroblog-be
+    working_dir: /var/legaiabay/mikroblog-be
+    env_file:
+      - .env 

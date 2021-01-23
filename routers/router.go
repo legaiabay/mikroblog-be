@@ -4,7 +4,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/mikroblog/helpers"
+	article "github.com/mikroblog-be/controllers/api/v1/article"
+	"github.com/mikroblog-be/helpers"
 )
 
 //SetupRouter -> Setup route with Go Standard Library
@@ -15,7 +16,10 @@ func InitRouter() {
 	//Redirect HTTP request
 	go http.ListenAndServe(":80", http.HandlerFunc(redirect))
 
-	// r.HandleFunc("", )
+	//Article
+	r.HandleFunc("/article/", article.Get)
+	r.HandleFunc("/article/add/", article.Add)
+	r.HandleFunc("/article/delete/", article.Delete)
 
 	helpers.Logger.Info("Server " + os.Getenv("SERVER_ENV") + " started at " + os.Getenv("SERVER_PORT"))
 	http.ListenAndServe(":"+os.Getenv("SERVER_PORT"), r)

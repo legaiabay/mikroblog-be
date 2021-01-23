@@ -1,2 +1,2 @@
 # mikroblog-be
-Micro blog back-end powered with Golang and Firebase
+(in progress) Micro blog back-end powered with Golang and Firebase
